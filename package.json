@@ -12,10 +12,12 @@
   "author": "lvilelas <lipevilelas@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "mongoose": "^5.5.1",
     "multer": "^1.4.1",
+    "typescript-char": "^0.0.0",
     "yarn": "^1.15.2"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "lvilelas <lipevilelas@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
@@ -20,5 +20,6 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.11"
-  }
+  },
+  "repository": "https://github.com/lvilelas/eng-sw-3.git"
 }

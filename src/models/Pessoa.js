@@ -15,19 +15,31 @@ const Pessoa = new mongoose.Schema({
     },
     email : {
         type : String,
-        required : false,
+        required : false
+    },
+    fornecedor : {
+        type : Boolean,
+        required : true
     },
     endereco : {
         type : mongoose.Schema.Types.ObjectId, ref:"Endereco",
         required : true,
-    }
+    },
+    imoveis : [{
+        relacionamento : {
+            type : String
+        },
+        imovel : {
+            type : mongoose.Schema.Types.ObjectId, ref:"Imovel"
+        }
+    }]
 },  {
     timestamps:true
     }
 );
 
 var autoPopulateLead = function(next) {
-    this.populate('endereco');
+    this.populate('endereco').populate('imoveis');
     next();
   };
 

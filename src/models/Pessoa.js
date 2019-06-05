@@ -22,8 +22,18 @@ const Pessoa = new mongoose.Schema({
         required : true
     },
     endereco : {
-        type : mongoose.Schema.Types.ObjectId, ref:"Endereco",
-        required : true,
+        numero : {
+            type : Number,
+            required : true
+        },
+        complemento : {
+            type : String,
+            required : true
+        },
+        endereco : {
+            type : mongoose.Schema.Types.ObjectId, ref:"Endereco",
+            required : true,
+        }
     },
     imoveis : [{
         relacionamento : {
@@ -39,7 +49,7 @@ const Pessoa = new mongoose.Schema({
 );
 
 var autoPopulateLead = function(next) {
-    this.populate('endereco').populate('imoveis');
+    this.populate('endereco.endereco').populate('imoveis.imovel');
     next();
   };
 

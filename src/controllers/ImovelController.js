@@ -44,49 +44,80 @@ class ImovelController{
 
     async insereImovel(req,res){
         var doc = req.body.doc;
-        var tipoDoc;
         const tipo = req.params.tipo;
         var achouImovel = null;
-        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
-            doc = doc.replace();
-            tipoDoc = "cpf";
-        }else if(/([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/.test(doc)){
-            tipoDoc = "cnpj";
+        let tipoPessoa;
+        const setor = req.body.setor;
+
+        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PF.findOne({"cpf":doc}).populate("pessoa");;
+        }else if(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PJ.findOne({"cnpj":doc}).populate("pessoa");;
         }else{
             return res.status(422).json({"menssagem":"documento invalido"});
         }
-        let imovel;
-        const hostName = process.env.URL || "http://localhost:3333";
-        const path = `/imoveis/busca/${tipo}`;
-        await request(hostName+path+"?"+tipo+"="+req.body.setor, (err, res, body) =>{
-            if(res.statusCode==200){
-                imovel = new Imovel(JSON.parse(body));
-            }
-            achouImovel = imovel!=null?true:false;
-        });
-        while(achouImovel == null){
-            await sleep(1000)
-        }
-        if(achouImovel == false){
-            return res.status(202).json({"mensagem":"imovel não encontrado"});
-        }
-        var id = "";
-            if(tipoDoc == "cpf"){
-                const pessoa = await PF.findOne({"cpf":doc});
-                id = pessoa.pessoa;
-            }else{
-                const pessoa = await PJ.findOne({"cnpj":doc});
-                id = pessoa.pessoa;
-            }
+
         if(req.body.relacionamento==null){
             return res.status(202).json({"mensagem":"Relacionamento não preenchido"});
         }
-        const pessoaAtual = await Pessoa.findById(id);
-        const imoveis = {relacionamento:req.body.relacionamento,imovel:imovel};
-        pessoaAtual.imoveis.push(imoveis);
-        await pessoaAtual.save();
-        return res.send({pessoaAtual});
+        let imovel;
+        if(tipo=="setor"){
+            imovel = await Imovel.findOne({"setor":setor});
+        }else if(tipo=="id"){
+            imovel = await Imovel.findById(setor);
+        }
+        if(imovel == null){
+            //return res.status(202).json({"mensagem":"imovel não encontrado"});
+        }
+        const imoveis = {relacionamento:req.body.relacionamento,"imovel":imovel};
+        tipoPessoa.pessoa.imoveis.push(imoveis);
+        await tipoPessoa.pessoa.save();
+        return res.send({tipoPessoa});
     }
 
+    async consultaImoveisPessoa(req,res){
+        var doc = req.query.doc;
+        let tipoPessoa;
+        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PF.findOne({"cpf":doc}).populate("pessoa");;
+        }else if(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PJ.findOne({"cnpj":doc}).populate("pessoa");;
+        }else{
+            return res.status(422).json({"menssagem":"documento invalido"});
+        }
+        return res.status(200).json(tipoPessoa.pessoa.imoveis);
+    }
+
+    async removeRelacao(req,res){
+        var doc = req.body.doc;
+        let tipoPessoa;
+        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PF.findOne({"cpf":doc}).populate("pessoa");;
+        }else if(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PJ.findOne({"cnpj":doc}).populate("pessoa");;
+        }else{
+            return res.status(422).json({"menssagem":"documento invalido"});
+        }
+        tipoPessoa.pessoa.imoveis.remove(req.body.idRelacao);
+        tipoPessoa.pessoa.save();
+        return res.status(200).json(tipoPessoa.pessoa.imoveis);
+    }
+    async updateRelacao(req,res){
+        var doc = req.body.doc;
+        let tipoPessoa;
+        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PF.findOne({"cpf":doc}).populate("pessoa");;
+        }else if(/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
+            tipoPessoa = await PJ.findOne({"cnpj":doc}).populate("pessoa");;
+        }else{
+            return res.status(422).json({"menssagem":"documento invalido"});
+        }
+        
+        const imoveis = {relacionamento:req.body.relacionamento,"imovel":imovel};
+        tipoPessoa.pessoa.imoveis.remove(req.body.idRelacao);
+        tipoPessoa.pessoa.imoveis.push
+        tipoPessoa.pessoa.save();
+        return res.status(200).json(tipoPessoa.pessoa.imoveis);
+    }
 }
 module.exports = new ImovelController();

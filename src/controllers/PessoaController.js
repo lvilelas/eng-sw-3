@@ -1,6 +1,4 @@
 const Pessoa = require("../models/Pessoa");
-const Endereco = require("../models/Endereco");
-
 
 class PessoaController{
     async cadastro(req,res) {

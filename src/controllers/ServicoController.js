@@ -1,7 +1,5 @@
 const Servico = require("../models/Servico");
 const ServicoRealizado = require("../models/ServicoRealizado");
-const PF = require("../models/PessoaFisica");
-const PJ = require("../models/PessoaJuridica");
 const Pessoa = require("../models/Pessoa");
 class ServicoController{
     async criaServico(req,res){

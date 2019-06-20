@@ -13,10 +13,9 @@ const ProdutoController = require("./controllers/ProdutoController");
 const CondominioController = require("./controllers/CondominioController");
 
 //pessoa
-routes.post("/cadastro/:tipo", PessoaController.cadastro);
+routes.post("/cadastro/", PessoaController.cadastro);
 routes.get("/busca/:tipo/:doc",PessoaController.buscaPorDoc);
-routes.get("/busca/:cep",PessoaController.buscaEndereco);
-routes.post("/alterar/:tipo",PessoaController.alterar);
+routes.post("/alterar/",PessoaController.alterar);
 
 //servicos
 routes.post("/servicos/cadastro", ServicoController.criaServico);

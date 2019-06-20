@@ -2,7 +2,7 @@ const Servico = require("../models/Servico");
 const ServicoRealizado = require("../models/ServicoRealizado");
 const PF = require("../models/PessoaFisica");
 const PJ = require("../models/PessoaJuridica");
-
+const Pessoa = require("../models/Pessoa");
 class ServicoController{
     async criaServico(req,res){
         const nome = req.body.nome;
@@ -37,31 +37,28 @@ class ServicoController{
         }
         valor = `R$ ${valor}`;
         let pessoa;
-        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(req.body.doc)){
-            pessoa = await PF.findOne({"cpf":req.body.doc});
-        }else if(/([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/.test(req.bod.doc)){
-            pessoa = await PJ.findOne({"cnpj":req.body.doc});
+        if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)|(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(req.body.doc) || /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/.test(req.bod.doc)){
+            pessoa = await Pessoa.findOne({"doc":req.body.doc});
         }else{
             return res.status(202).json({"erro":"documento invalido"});
         }
         if(pessoa==null){
             return res.status(202).json({"erro":"pessoa não encontrada"});
         }
-        if(pessoa.pessoa.fornecedor==false){
+        if(pessoa.fornecedor==false){
             return res.status(202).json({"erro":"Não é um fornecedor valido"});
         }
         const servico = await Servico.findOne({"nome":req.body.servico});
         if(servico == null){
             return res.status(202).json({"erro":"serviço não encontrado"});
         }
-        var fornecedor = {"doc":req.body.doc,"pessoa":pessoa};
-        const servicoRealizado = await ServicoRealizado.create({"servico" : servico,"valor":valor,"data":data,"fornecedor":fornecedor});
+        const servicoRealizado = await ServicoRealizado.create({"servico" : servico,"valor":valor,"data":data,"fornecedor":pessoa});
         return res.json(servicoRealizado);
     }
 
     async buscaServicosRealizados(req,res){
         const servico = await Servico.findOne({"nome":req.query.servico});
-        const servicos = await ServicoRealizado.find({"servico":servico}).populate("servico").populate("pessoa");
+        const servicos = await ServicoRealizado.find({"servico":servico}).populate("servico").populate("fornecedor");
         return res.json(servicos);
     }
 }

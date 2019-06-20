@@ -1,6 +1,16 @@
 const mongoose = require('mongoose');
 
 const Pessoa = new mongoose.Schema({
+    doc : {
+        type : String,
+        required : true,
+        validate: {
+            validator: function(v) {
+              return /(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(v) || /([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})/.test(v);;
+            },
+            message: "Erro na validação dos campos; Documento Invalido"
+        }
+    },
     nome : {
         type : String,
         required : true
@@ -21,19 +31,35 @@ const Pessoa = new mongoose.Schema({
         type : Boolean,
         required : true
     },
-    endereco : {
-        numero : {
-            type : Number,
-            required : true
-        },
-        complemento : {
-            type : String,
-            required : true
-        },
-        endereco : {
-            type : mongoose.Schema.Types.ObjectId, ref:"Endereco",
-            required : true,
+    numero : {
+        type : Number,
+        required : true
+    },
+    complemento : {
+        type : String,
+        required : true
+    },
+    cep : {
+        type : String,
+        required : true,
+        validate: {
+            validator: function(v) {
+              return /[0-9]{5}-[\d]{3}/.test(v);
+            },
+            message: "Erro na validação dos campos: CEP Invalido"
         }
+    },
+    rua : {
+        type : String,
+        required : true
+    },
+    bairro : {
+        type : String,
+        required : true,
+    },
+    cidade : {
+        type : String,
+        required : true
     },
     imoveis : [{
         relacionamento : {
@@ -49,7 +75,7 @@ const Pessoa = new mongoose.Schema({
 );
 
 var autoPopulateLead = function(next) {
-    this.populate('endereco.endereco').populate('imoveis.imovel');
+    this.populate('imoveis.imovel');
     next();
   };
 

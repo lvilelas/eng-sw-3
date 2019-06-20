@@ -14,14 +14,8 @@ const ServicoRealizado = mongoose.Schema({
         require : true
     },
     fornecedor : {
-        doc : {
-            type : String,
-            reuired : true
-        },
-        pessoa : {
-        type : mongoose.Schema.Types.ObjectId,ref:"Pessoa",
-        required : true
-        }
+    type : mongoose.Schema.Types.ObjectId,ref:"Pessoa",
+    required : true
     }
 });
 

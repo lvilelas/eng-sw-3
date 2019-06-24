@@ -5,6 +5,12 @@ class PessoaController{
         const pessoa = await Pessoa.find();
         return res.json(pessoa);
     }
+    
+    async buscaTodosFornecedores(req,res){
+        const pessoa = await Pessoa.find({"fornecedor":true});
+        return res.json(pessoa);
+    }
+
     async cadastro(req,res) {
         console.log(req.body);
         if(await Pessoa.findOne({"doc" : req.body.doc})){

@@ -19,7 +19,7 @@ routes.get("/busca/:tipo/:doc",PessoaController.buscaPorDoc);
 routes.post("/alterar/",PessoaController.alterar);
 routes.get("/buscaId/:id",PessoaController.buscaPorID);
 routes.get("/busca/",PessoaController.buscaTodos);
-
+routes.get("/buscar/fornecedores/",PessoaController.buscaTodosFornecedores);
 //servicos
 routes.post("/servicos/cadastro", ServicoController.criaServico);
 routes.post("/servicos/realizado/insere", ServicoController.realizaServico);

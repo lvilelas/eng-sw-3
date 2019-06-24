@@ -7,7 +7,7 @@ const app = express();
 
 app.use(cors());
 
-mongoose.connect('mongodb+srv://lvilelas:l.vilelas97756@cluster0-d8xst.azure.mongodb.net/test?retryWrites=true', 
+mongoose.connect('mongodb+srv://lvilelas:l.vilelas97756@cluster0-d8xst.mongodb.net/test?retryWrites=true&w=majority', 
     {
     useNewUrlParser: true,
     }

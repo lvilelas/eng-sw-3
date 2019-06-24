@@ -6,7 +6,7 @@ const ServicoRealizado = mongoose.Schema({
         required : true
     },
     valor : {
-        type : String,
+        type : Number,
         required : true
     },
     data : {

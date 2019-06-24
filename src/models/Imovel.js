@@ -14,5 +14,9 @@ const Imovel = new mongoose.Schema({
 }
 
 );
-
+var autoPopulateLead = function(next) {
+    this.populate('condominio');
+    next();
+  };
+  Imovel.pre('find',autoPopulateLead).pre('findOne',autoPopulateLead);
 module.exports = mongoose.model('Imovel',Imovel);

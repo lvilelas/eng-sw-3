@@ -3,9 +3,13 @@ const path = require('path');
 const request = require('request');
 const Pessoa = require("../models/Pessoa");
 const sleep = require('system-sleep');
-
+const _ = require('lodash');
 class ImovelController{
 
+    async buscaTodos(req,res){
+        const imoveis = await Imovel.find();
+        return res.json(imoveis);
+    }
     async cadastro(req,res){
         const setor = req.body.setor;
         if(await Imovel.findOne({setor})){
@@ -17,7 +21,7 @@ class ImovelController{
     async busca(req,res){
         if(req.params.tipo == "id"){
             try {
-                const imovel = await Imovel.findById(req.query.id);
+                let imovel = await Imovel.findById(req.query.id);
                 if(imovel == null){
                     return res.status(202).send("Imovel não encontrado");
                 }
@@ -48,11 +52,11 @@ class ImovelController{
         const setor = req.body.setor;
 
         if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc) || /(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
-            pessoa = await Pessoa.findOne({"doc":doc}).populate("pessoa");;
+            pessoa = await Pessoa.findOne({"doc":doc}).populate();
         }else{
             return res.status(422).json({"menssagem":"documento invalido"});
         }
-
+        
         if(req.body.relacionamento==null){
             return res.status(202).json({"mensagem":"Relacionamento não preenchido"});
         }
@@ -69,7 +73,7 @@ class ImovelController{
         imoveis = {relacionamento:req.body.relacionamento,"imovel":imovel};
         pessoa.imoveis.push(imoveis);
         await pessoa.save();
-        return res.send({pessoa});
+        return res.json(pessoa.imoveis);
     }
 
     async consultaImoveisPessoa(req,res){
@@ -99,12 +103,13 @@ class ImovelController{
         var doc = req.body.doc;
         let pessoa;
         if(/(^\d{3}\.\d{3}\.\d{3}\-\d{2}$)/.test(doc)||/(^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$)/.test(doc)){
-            pessoa = await Pessoa.findOne({"doc":doc});
+            pessoa = await Pessoa.findOne({"doc":doc}).populate();
         }else{
             return res.status(422).json({"menssagem":"documento invalido"});
         }
-        
-        const imoveis = {relacionamento:req.body.relacionamento,"imovel":imovel};
+        const relacao = (_.filter(pessoa.imoveis, { 'id': req.body.idRelacao }))[0];
+        let imovel = relacao.imovel;
+        const imoveis = {"relacionamento":req.body.relacionamento,"imovel":imovel};
         pessoa.imoveis.remove(req.body.idRelacao);
         pessoa.imoveis.push(imoveis);
         pessoa.save();

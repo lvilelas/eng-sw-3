@@ -7,7 +7,7 @@ class CondominioController{
             return res.status(206).json({"mensagem":"Condominio ja existe"});
         }
         const condominio = await Condominio.create(req.body);
-        return condominio;
+        return res.json(condominio);
     }
 
     async buscaCondominio(req,res){

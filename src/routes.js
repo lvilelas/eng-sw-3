@@ -26,6 +26,7 @@ routes.post("/servicos/realizado/insere", ServicoController.realizaServico);
 routes.get("/servicos/busca/:tipo",ServicoController.buscaServico);
 routes.get("/servicos/realizados/busca",ServicoController.buscaServicosRealizados);
 routes.get("/servicos/realizados/busca/todos",ServicoController.buscaServicoRealizadoId);
+routes.get("/servicos/realizados/todos",ServicoController.buscaServicosRealizadosUltimaSemana);
 routes.get("/servico/busca",ServicoController.buscaTodoServicos);
 //imovel
 routes.get("/imoveis/busca/:tipo",ImovelController.busca);

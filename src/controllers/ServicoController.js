@@ -54,11 +54,33 @@ class ServicoController {
         const servico = await Servico.find();
         return res.json(servico);
     }
-    async buscaServicoRealizadoId(req,res){
+    async buscaServicoRealizadoId(req, res) {
         const id = req.query.servico;
         const servicoId = await Servico.findById(id);
-        const servico = await ServicoRealizado.find({"servico":servicoId}).populate('fornecedor').populate('servico');
+        const servico = await ServicoRealizado.find({ "servico": servicoId }).populate('fornecedor').populate('servicos');
         return res.json(servico);
+    }
+    async buscaServicosRealizadosUltimaSemana(req, res) {
+        let servicos = await ServicoRealizado.aggregate([
+            {
+                $match: {
+                    'data': { '$gte': new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))) }
+                }
+            },
+            {
+                $group: {
+                    _id: { servico: "$servico" },
+                    quantidade: { "$sum": 1 },
+                    valor: { $sum: "$valor" },
+                }
+            }, {
+                $sort: { valor: -1 }
+            }
+        ]).exec(function (err, data) {
+            Servico.populate(data, { path: '_id.servico' }, function (err, data) {
+                res.send(data)
+            });
+        });
     }
     async buscaServicosRealizados(req, res) {
         const id = req.query.servico;
@@ -76,7 +98,7 @@ class ServicoController {
                 }
             },
             {
-                $match: {'servico': ObjectId(`${servicoId._id}`)}
+                $match: { 'servico': ObjectId(`${servicoId._id}`) }
             },
             {
                 $group: {
